@@ -16,8 +16,10 @@ CASSANDRA_CONFIG_FILE = 'conf/cassandra.yaml'
 CASSANDRA_CONFIG_CLUSTER_NAME = os.environ.get('CASSANDRA_CONFIG_CLUSTER_NAME', 'Cassandra cluster')
 CASSANDRA_CONFIG_DATA_DIRS = os.environ.get('CASSANDRA_CONFIG_DATA_DIRS', '/var/lib/cassandra/data')
 CASSANDRA_CONFIG_COMMITLOG_DIR = os.environ.get('CASSANDRA_CONFIG_COMMITLOG_DIR', '/var/lib/cassandra/commitlog')
-CASSANDRA_CONFIG_LISTEN_ADDRESS = os.environ.get('CASSANDRA_CONFIG_LISTEN_ADDRESS', '127.0.0.1')
-CASSANDRA_CONFIG_RPC_ADDRESS = os.environ.get('CASSANDRA_CONFIG_RPC_ADDRESS', '127.0.0.1')
+CASSANDRA_CONFIG_STORAGE_PORT = int(os.environ.get('CASSANDRA_CONFIG_STORAGE_PORT', 7000))
+CASSANDRA_CONFIG_TRANSPORT_PORT = int(os.environ.get('CASSANDRA_CONFIG_TRANSPORT_PORT', 9042))
+CASSANDRA_CONFIG_RPC_PORT = int(os.environ.get('CASSANDRA_CONFIG_RPC_PORT', 9160))
+CASSANDRA_CONFIG_BROADCAST_ADDRESS = os.environ.get('CASSANDRA_CONFIG_BROADCAST_ADDRESS', '127.0.0.1')
 CASSANDRA_CONFIG_SEED_PEERS = os.environ.get('CASSANDRA_CONFIG_SEED_PEERS', '127.0.0.1')
 
 # Read and parse the existing file.
@@ -29,8 +31,12 @@ conf.update({
     'cluster_name': CASSANDRA_CONFIG_CLUSTER_NAME,
     'data_file_directories': CASSANDRA_CONFIG_DATA_DIRS.split(','),
     'commitlog_directory': CASSANDRA_CONFIG_COMMITLOG_DIR,
-    'listen_address': CASSANDRA_CONFIG_LISTEN_ADDRESS,
-    'rpc_address': CASSANDRA_CONFIG_RPC_ADDRESS,
+    'listen_address': '0.0.0.0',
+    'broadcast_address': CASSANDRA_CONFIG_BROADCAST_ADDRESS,
+    'rpc_address': '0.0.0.0',
+    'storage_port': CASSANDRA_CONFIG_STORAGE_PORT,
+    'native_transport_port': CASSANDRA_CONFIG_TRANSPORT_PORT,
+    'rpc_port': CASSANDRA_CONFIG_RPC_PORT,
 })
 
 conf['seed_provider'][0]['parameters'][0]['seeds'] = CASSANDRA_CONFIG_SEED_PEERS
