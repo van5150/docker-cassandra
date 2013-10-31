@@ -19,8 +19,12 @@ CASSANDRA_CONFIG_COMMITLOG_DIR = os.environ.get('CASSANDRA_CONFIG_COMMITLOG_DIR'
 CASSANDRA_CONFIG_STORAGE_PORT = int(os.environ.get('CASSANDRA_CONFIG_STORAGE_PORT', 7000))
 CASSANDRA_CONFIG_TRANSPORT_PORT = int(os.environ.get('CASSANDRA_CONFIG_TRANSPORT_PORT', 9042))
 CASSANDRA_CONFIG_RPC_PORT = int(os.environ.get('CASSANDRA_CONFIG_RPC_PORT', 9160))
-CASSANDRA_CONFIG_BROADCAST_ADDRESS = os.environ.get('CASSANDRA_CONFIG_BROADCAST_ADDRESS', '127.0.0.1')
 CASSANDRA_CONFIG_SEED_PEERS = os.environ.get('CASSANDRA_CONFIG_SEED_PEERS', '127.0.0.1')
+
+CONTAINER_HOST_ADDRESS = os.environ.get('CONTAINER_HOST_ADDRESS', '')
+if not CONTAINER_HOST_ADDRESS:
+    sys.stderr.write('Container\'s host address is required for Cassandra Gossip discovery!')
+    sys.exit(1)
 
 # Read and parse the existing file.
 with open(CASSANDRA_CONFIG_FILE) as f:
@@ -32,7 +36,7 @@ conf.update({
     'data_file_directories': CASSANDRA_CONFIG_DATA_DIRS.split(','),
     'commitlog_directory': CASSANDRA_CONFIG_COMMITLOG_DIR,
     'listen_address': '0.0.0.0',
-    'broadcast_address': CASSANDRA_CONFIG_BROADCAST_ADDRESS,
+    'broadcast_address': CONTAINER_HOST_ADDRESS,
     'rpc_address': '0.0.0.0',
     'storage_port': CASSANDRA_CONFIG_STORAGE_PORT,
     'native_transport_port': CASSANDRA_CONFIG_TRANSPORT_PORT,

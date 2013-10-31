@@ -15,6 +15,9 @@ Environment variables
 The following environment variables are understood by the startup script to
 seed the service's configuration:
 
+  - `CONTAINER_HOST_ADDRESS` should contain the address of the Docker
+    container's host. It's used by Cassandra's Gossip protocol as the
+    advertised host name and is required for the container to start;
   - `CASSANDRA_CONFIG_CLUSTER_NAME`, the Cassandra cluster name, driving the
     `cluster_name` configuration setting. Defaults to `Cassandra cluster`;
   - `CASSANDRA_CONFIG_DATA_DIRS`, a comma-separated list of data directories to
@@ -23,10 +26,6 @@ seed the service's configuration:
   - `CASSANDRA_CONFIG_COMMITLOG_DIR`, the commit log directory for Cassandra's
     write log (`commitlog_directory`). Defaults to
     `/var/lib/cassandra/commitlog`;
-  - `CASSANDRA_CONFIG_BROADCAST_ADDRESS`, the address Cassandra should
-    advertise to the other Cassandra nodes via the Gossip protocol. This should
-    be an IP address accessible from outside the container that eventually
-    forwards to the Cassandra ports. Defaults to `127.0.0.1`;
   - `CASSANDRA_CONFIG_SEED_PEERS`, a comma-separated list of seed peers for
     Cassandra to connect to for the first Gossip exchange(s). Defaults to
     `127.0.0.1` as well;
