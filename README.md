@@ -20,12 +20,6 @@ seed the service's configuration:
     advertised host name and is required for the container to start;
   - `CASSANDRA_CONFIG_CLUSTER_NAME`, the Cassandra cluster name, driving the
     `cluster_name` configuration setting. Defaults to `Cassandra cluster`;
-  - `CASSANDRA_CONFIG_DATA_DIRS`, a comma-separated list of data directories to
-    be used by Cassandra (`data_file_directories`). Defaults to
-    `/var/lib/cassandra/data`;
-  - `CASSANDRA_CONFIG_COMMITLOG_DIR`, the commit log directory for Cassandra's
-    write log (`commitlog_directory`). Defaults to
-    `/var/lib/cassandra/commitlog`;
   - `CASSANDRA_CONFIG_SEED_PEERS`, a comma-separated list of seed peers for
     Cassandra to connect to for the first Gossip exchange(s). Defaults to
     `127.0.0.1` as well;
@@ -35,6 +29,15 @@ seed the service's configuration:
     (`native_transport_port` setting). Defaults to 9042;
   - `CASSANDRA_CONFIG_RPC_PORT`, the Thrift RPC interface listening port
     (`rpc_port` setting). Defaults to 9160.
+
+Volumes
+-------
+
+The Cassandra image uses the two following volumes that you may want to map
+from the container's host:
+
+  - `/var/lib/cassandra/data`, for Cassandra's data;
+  - `/var/lib/cassandra/commitlog`, for the write logs.
 
 Usage
 -----

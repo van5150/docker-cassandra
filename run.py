@@ -14,8 +14,6 @@ CASSANDRA_CONFIG_FILE = 'conf/cassandra.yaml'
 
 # Environment variables driving the Cassandra configuration and their defaults.
 CASSANDRA_CONFIG_CLUSTER_NAME = os.environ.get('CASSANDRA_CONFIG_CLUSTER_NAME', 'Cassandra cluster')
-CASSANDRA_CONFIG_DATA_DIRS = os.environ.get('CASSANDRA_CONFIG_DATA_DIRS', '/var/lib/cassandra/data')
-CASSANDRA_CONFIG_COMMITLOG_DIR = os.environ.get('CASSANDRA_CONFIG_COMMITLOG_DIR', '/var/lib/cassandra/commitlog')
 CASSANDRA_CONFIG_STORAGE_PORT = int(os.environ.get('CASSANDRA_CONFIG_STORAGE_PORT', 7000))
 CASSANDRA_CONFIG_TRANSPORT_PORT = int(os.environ.get('CASSANDRA_CONFIG_TRANSPORT_PORT', 9042))
 CASSANDRA_CONFIG_RPC_PORT = int(os.environ.get('CASSANDRA_CONFIG_RPC_PORT', 9160))
@@ -33,8 +31,8 @@ with open(CASSANDRA_CONFIG_FILE) as f:
 # Update the configuration settings we care about.
 conf.update({
     'cluster_name': CASSANDRA_CONFIG_CLUSTER_NAME,
-    'data_file_directories': CASSANDRA_CONFIG_DATA_DIRS.split(','),
-    'commitlog_directory': CASSANDRA_CONFIG_COMMITLOG_DIR,
+    'data_file_directories': '/var/lib/cassandra/data',
+    'commitlog_directory': '/var/lib/cassandra/commitlog',
     'listen_address': '0.0.0.0',
     'broadcast_address': CONTAINER_HOST_ADDRESS,
     'rpc_address': '0.0.0.0',

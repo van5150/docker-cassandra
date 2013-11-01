@@ -15,4 +15,6 @@ RUN wget -q -O - http://www.gtlib.gatech.edu/pub/apache/cassandra/2.0.1/apache-c
 ADD run.py /opt/apache-cassandra-2.0.1/.docker/
 
 WORKDIR /opt/apache-cassandra-2.0.1
+VOLUME /var/lib/cassandra/data
+VOLUME /var/lib/cassandra/commitlog
 CMD ["python", "/opt/apache-cassandra-2.0.1/.docker/run.py"]
