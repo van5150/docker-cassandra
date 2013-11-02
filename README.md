@@ -15,20 +15,24 @@ Environment variables
 The following environment variables are understood by the startup script to
 seed the service's configuration:
 
+  - `CONTAINER_NAME` should contain the logical name of the container,
+    which will be used for looking up links and ports informations from the
+    other environment variables. For this, the name is uppercased and
+    non-alphanumeric characters are replaced by underscores;
   - `CONTAINER_HOST_ADDRESS` should contain the address of the Docker
     container's host. It's used by Cassandra's Gossip protocol as the
     advertised host name and is required for the container to start;
+
   - `CASSANDRA_CONFIG_CLUSTER_NAME`, the Cassandra cluster name, driving the
     `cluster_name` configuration setting. Defaults to `Cassandra cluster`;
-  - `CASSANDRA_CONFIG_SEED_PEERS`, a comma-separated list of seed peers for
-    Cassandra to connect to for the first Gossip exchange(s). Defaults to
-    `127.0.0.1` as well;
-  - `CASSANDRA_CONFIG_STORAGE_PORT`, the storage command and data port
+  - `CASSANDRA_<NAME>_STORAGE_PORT`, the storage command and data port
     (`storage_port` setting). Defaults to 7000;
-  - `CASSANDRA_CONFIG_TRANSPORT_PORT`, the native transport listening port
+  - `CASSANDRA_<NAME>_TRANSPORT_PORT`, the native transport listening port
     (`native_transport_port` setting). Defaults to 9042;
-  - `CASSANDRA_CONFIG_RPC_PORT`, the Thrift RPC interface listening port
+  - `CASSANDRA_<NAME>_RPC_PORT`, the Thrift RPC interface listening port
     (`rpc_port` setting). Defaults to 9160.
+
+The peer list will be constructed from the `CASSANDRA_*_HOST` variables.
 
 Volumes
 -------
