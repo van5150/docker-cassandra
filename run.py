@@ -1,11 +1,18 @@
 #!/usr/bin/env python
 
+# Copyright (C) 2013 SignalFuse, Inc.
+
 # Start script for Cassandra.
+# Requires python-yaml for configuration reading/writing.
 
 import os
 import re
 import sys
 import yaml
+
+if __name__ != '__main__':
+    sys.stderr.write('This script is only meant to be executed.\n')
+    sys.exit(1)
 
 os.chdir(os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
@@ -13,13 +20,16 @@ os.chdir(os.path.join(
 
 CASSANDRA_CONFIG_FILE = 'conf/cassandra.yaml'
 
+# Get container/instance name.
 CONTAINER_NAME = os.environ.get('CONTAINER_NAME', '')
 assert CONTAINER_NAME, 'Container name is missing!'
 CASSANDRA_CONFIG_BASE = re.sub(r'[^\w]', '_', CONTAINER_NAME).upper()
 
+# Get container's host IP address/hostname.
 CONTAINER_HOST_ADDRESS = os.environ.get('CONTAINER_HOST_ADDRESS', '')
 assert CONTAINER_HOST_ADDRESS, 'Container host address is required for Gossip discovery!'
 
+# Gather configuration settings from environment.
 CASSANDRA_CONFIG_CLUSTER_NAME = os.environ.get('CASSANDRA_CONFIG_CLUSTER_NAME', 'local-cassandra')
 CASSANDRA_CONFIG_STORAGE_PORT = int(os.environ.get('CASSANDRA_%s_STORAGE_PORT' % CASSANDRA_CONFIG_BASE, 7000))
 CASSANDRA_CONFIG_TRANSPORT_PORT = int(os.environ.get('CASSANDRA_%s_TRANSPORT_PORT' % CASSANDRA_CONFIG_BASE, 9042))
