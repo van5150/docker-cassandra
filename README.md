@@ -15,6 +15,8 @@ Environment variables
 The following environment variables are understood by the startup script to
 seed the service's configuration:
 
+  - `SERVICE_NAME` should contain the logical name of the service this
+    container is an instance of;
   - `CONTAINER_NAME` should contain the logical name of the container,
     which will be used for looking up links and ports informations from the
     other environment variables. For this, the name is uppercased and
@@ -23,16 +25,18 @@ seed the service's configuration:
     container's host. It's used by Cassandra's Gossip protocol as the
     advertised host name and is required for the container to start;
 
-  - `CASSANDRA_CONFIG_CLUSTER_NAME`, the Cassandra cluster name, driving the
-    `cluster_name` configuration setting. Defaults to `Cassandra cluster`;
-  - `CASSANDRA_<NAME>_STORAGE_PORT`, the storage command and data port
-    (`storage_port` setting). Defaults to 7000;
-  - `CASSANDRA_<NAME>_TRANSPORT_PORT`, the native transport listening port
-    (`native_transport_port` setting). Defaults to 9042;
-  - `CASSANDRA_<NAME>_RPC_PORT`, the Thrift RPC interface listening port
-    (`rpc_port` setting). Defaults to 9160.
+  - `CLUSTER_NAME`, the Cassandra cluster name, driving the
+    `cluster_name` configuration setting. Defaults to `Cassandra
+    cluster`;
+  - `<SERVICE_NAME>_<CONTAINER_NAME>_STORAGE_PORT`, the storage command
+    and data port (`storage_port` setting). Defaults to 7000;
+  - `<SERVICE_NAME>_<CONTAINER_NAME>_TRANSPORT_PORT`, the native
+    transport listening port (`native_transport_port` setting). Defaults
+    to 9042;
+  - `<SERVICE_NAME>_<CONTAINER_NAME>_RPC_PORT`, the Thrift RPC interface
+    listening port (`rpc_port` setting). Defaults to 9160.
 
-The peer list will be constructed from the `CASSANDRA_*_HOST` variables.
+The peer list will be constructed from the `<SERVICE_NAME>_*_HOST` variables.
 
 Volumes
 -------

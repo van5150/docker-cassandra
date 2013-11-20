@@ -10,9 +10,7 @@ import re
 import sys
 import yaml
 
-if __name__ != '__main__':
-    sys.stderr.write('This script is only meant to be executed.\n')
-    sys.exit(1)
+from maestro.guestutils import *
 
 os.chdir(os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
@@ -20,47 +18,25 @@ os.chdir(os.path.join(
 
 CASSANDRA_CONFIG_FILE = 'conf/cassandra.yaml'
 
-# Get container/instance name.
-CONTAINER_NAME = os.environ.get('CONTAINER_NAME', '')
-assert CONTAINER_NAME, 'Container name is missing!'
-CONFIG_BASE = re.sub(r'[^\w]', '_', CONTAINER_NAME).upper()
-
-# Get container's host IP address/hostname.
-CONTAINER_HOST_ADDRESS = os.environ.get('CONTAINER_HOST_ADDRESS', '')
-assert CONTAINER_HOST_ADDRESS, 'Container host address is required for Gossip discovery!'
-
-# Gather configuration settings from environment.
-CASSANDRA_CLUSTER_NAME = os.environ.get('CASSANDRA_CLUSTER_NAME', 'local-cassandra')
-CASSANDRA_STORAGE_PORT = int(os.environ.get('CASSANDRA_{}_STORAGE_PORT'.format(CONFIG_BASE), 7000))
-CASSANDRA_TRANSPORT_PORT = int(os.environ.get('CASSANDRA_{}_TRANSPORT_PORT'.format(CONFIG_BASE), 9042))
-CASSANDRA_RPC_PORT = int(os.environ.get('CASSANDRA_{}_RPC_PORT'.format(CONFIG_BASE), 9160))
-
-# TODO(mpetazzoni): find a way to handle multi-cluster deployments. Here, seed
-# peers would overlap.
-CASSANDRA_SEED_PEERS = ','.join(
-    map(lambda x: os.environ[x],
-        filter(lambda x: x.startswith('CASSANDRA_') and x.endswith('_HOST'),
-               os.environ.keys()))) \
-    or '127.0.0.1'
-
 # Read and parse the existing file.
 with open(CASSANDRA_CONFIG_FILE) as f:
     conf = yaml.load(f)
 
 # Update the configuration settings we care about.
 conf.update({
-    'cluster_name': CASSANDRA_CLUSTER_NAME,
+    'cluster_name': os.environ.get('CLUSTER_NAME', 'local-cassandra'),
     'data_file_directories': ['/var/lib/cassandra/data'],
     'commitlog_directory': '/var/lib/cassandra/commitlog',
     'listen_address': '0.0.0.0',
-    'broadcast_address': CONTAINER_HOST_ADDRESS,
+    'broadcast_address': get_container_host_address(),
     'rpc_address': '0.0.0.0',
-    'storage_port': CASSANDRA_STORAGE_PORT,
-    'native_transport_port': CASSANDRA_TRANSPORT_PORT,
-    'rpc_port': CASSANDRA_RPC_PORT,
+    'storage_port': get_port('storage', 7000),
+    'native_transport_port': get_port('transport', 9042),
+    'rpc_port': get_port('rpc', 9160),
 })
 
-conf['seed_provider'][0]['parameters'][0]['seeds'] = CASSANDRA_SEED_PEERS
+conf['seed_provider'][0]['parameters'][0]['seeds'] = \
+    ','.join(get_node_list(get_service_name(), minimum=0)) or '127.0.0.1'
 
 # Output the updated configuration.
 with open(CASSANDRA_CONFIG_FILE, 'w+') as f:
