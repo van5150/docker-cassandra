@@ -24,7 +24,8 @@ with open(CASSANDRA_CONFIG_FILE) as f:
 
 # Update the configuration settings we care about.
 conf.update({
-    'cluster_name': os.environ.get('CLUSTER_NAME', 'local-cassandra'),
+    'cluster_name': os.environ.get('CLUSTER_NAME',
+                                   '{}-cassandra'.format(get_environment_name())),
     'data_file_directories': ['/var/lib/cassandra/data'],
     'commitlog_directory': '/var/lib/cassandra/commitlog',
     'listen_address': '0.0.0.0',

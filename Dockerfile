@@ -9,7 +9,7 @@ RUN apt-get update
 RUN apt-get -y install python python-yaml python-setuptools
 
 # Install Maestro for guest utils
-RUN easy_install http://github.com/signalfuse/maestro-ng/archive/master.zip
+RUN easy_install http://github.com/signalfuse/maestro-ng/archive/maestro-0.1.0.zip
 
 # Get the latest stable version of Cassandra
 RUN wget -q -O - http://www.gtlib.gatech.edu/pub/apache/cassandra/2.0.1/apache-cassandra-2.0.1-bin.tar.gz \
