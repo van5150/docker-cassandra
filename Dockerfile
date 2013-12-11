@@ -12,7 +12,7 @@ RUN apt-get -y install python python-yaml python-setuptools
 RUN easy_install http://github.com/signalfuse/maestro-ng/archive/maestro-0.1.0.zip
 
 # Get the latest stable version of Cassandra
-RUN wget -q -O - http://www.gtlib.gatech.edu/pub/apache/cassandra/2.0.1/apache-cassandra-2.0.1-bin.tar.gz \
+RUN wget -q -O - http://archive.apache.org/dist/cassandra/2.0.1/apache-cassandra-2.0.1-bin.tar.gz \
   | tar -C /opt -xz
 
 ADD run.py /opt/apache-cassandra-2.0.1/.docker/
