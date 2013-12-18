@@ -15,6 +15,7 @@ RUN easy_install http://github.com/signalfuse/maestro-ng/archive/maestro-0.1.4.z
 RUN wget -q -O - http://archive.apache.org/dist/cassandra/2.0.1/apache-cassandra-2.0.1-bin.tar.gz \
   | tar -C /opt -xz
 
+ADD jmxagent.jar /opt/apache-cassandra-2.0.1/lib/
 ADD run.py /opt/apache-cassandra-2.0.1/.docker/
 
 WORKDIR /opt/apache-cassandra-2.0.1

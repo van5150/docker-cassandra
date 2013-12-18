@@ -7,6 +7,7 @@
 
 import os
 import re
+import subprocess
 import sys
 import yaml
 
@@ -28,7 +29,7 @@ conf.update({
                                    '{}-cassandra'.format(get_environment_name())),
     'data_file_directories': ['/var/lib/cassandra/data'],
     'commitlog_directory': '/var/lib/cassandra/commitlog',
-    'listen_address': get_container_internal_address(),
+    'listen_address': '0.0.0.0',
     'broadcast_address': get_container_host_address(),
     'rpc_address': get_container_internal_address(),
     'storage_port': get_port('storage', 7000),
@@ -43,12 +44,17 @@ conf['seed_provider'][0]['parameters'][0]['seeds'] = \
 with open(CASSANDRA_CONFIG_FILE, 'w+') as f:
     yaml.dump(conf, f, default_flow_style=False)
 
-# Enable JMX on the correct listen address
-os.environ['JVM_OPTS'] = '{} {}={}'.format(
-    os.environ.get('JVM_OPTS', ''),
-    '-Djava.rmi.server.hostname',
-    get_container_host_address())
-os.environ['JMX_PORT'] = str(get_port('jmx', 7199))
+# Setup the JMX Java agent.
+os.environ['JVM_OPTS'] = ' '.join([
+    '-javaagent:lib/jmxagent.jar',
+    '-Dsf.jmxagent.port={}'.format(get_port('jmx', -1)),
+    '-Djava.rmi.server.hostname={}'.format(get_container_host_address())
+])
+
+# Throw the default JMX on another port we don't care about.
+subprocess.check_call(['sed', '-ie',
+    's/^JMX_PORT="7199"$/JMX_PORT="17199"/',
+    'conf/cassandra-env.sh'])
 
 # Start Cassandra in the foreground.
 os.execl('bin/cassandra', 'cassandra', '-f')
