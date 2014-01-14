@@ -29,7 +29,7 @@ conf.update({
                                    '{}-cassandra'.format(get_environment_name())),
     'data_file_directories': ['/var/lib/cassandra/data'],
     'commitlog_directory': '/var/lib/cassandra/commitlog',
-    'listen_address': '0.0.0.0',
+    'listen_address': get_container_internal_address(),
     'broadcast_address': get_container_host_address(),
     'rpc_address': get_container_internal_address(),
     'storage_port': get_port('storage', 7000),
