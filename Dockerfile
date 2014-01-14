@@ -12,13 +12,13 @@ RUN apt-get -y install python python-yaml python-setuptools
 RUN easy_install http://github.com/signalfuse/maestro-ng/archive/maestro-0.1.4.zip
 
 # Get the latest stable version of Cassandra
-RUN wget -q -O - http://archive.apache.org/dist/cassandra/2.0.1/apache-cassandra-2.0.1-bin.tar.gz \
+RUN wget -q -O - http://archive.apache.org/dist/cassandra/2.0.4/apache-cassandra-2.0.4-bin.tar.gz \
   | tar -C /opt -xz
 
-ADD jmxagent.jar /opt/apache-cassandra-2.0.1/lib/
-ADD run.py /opt/apache-cassandra-2.0.1/.docker/
+ADD jmxagent.jar /opt/apache-cassandra-2.0.4/lib/
+ADD run.py /opt/apache-cassandra-2.0.4/.docker/
 
-WORKDIR /opt/apache-cassandra-2.0.1
+WORKDIR /opt/apache-cassandra-2.0.4
 VOLUME /var/lib/cassandra/data
 VOLUME /var/lib/cassandra/commitlog
-CMD ["python", "/opt/apache-cassandra-2.0.1/.docker/run.py"]
+CMD ["python", "/opt/apache-cassandra-2.0.4/.docker/run.py"]
