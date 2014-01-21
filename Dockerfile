@@ -1,15 +1,13 @@
 # Dockerfile for Cassandra
 
-FROM mpetazzoni/maestro-base
-
+FROM quay.io/signalfuse/maestro-base:0.1.5
 MAINTAINER Maxime Petazzoni <max@signalfuse.com>
+
+ENV DEBIAN_FRONTEND noninteractive
 
 # Python YAML is needed to tweak Cassandra's configuration
 RUN apt-get update
-RUN apt-get -y install python python-yaml python-setuptools
-
-# Install Maestro for guest utils
-RUN easy_install http://github.com/signalfuse/maestro-ng/archive/maestro-0.1.4.zip
+RUN apt-get -y install python-yaml
 
 # Get the latest stable version of Cassandra
 RUN wget -q -O - http://archive.apache.org/dist/cassandra/2.0.4/apache-cassandra-2.0.4-bin.tar.gz \
