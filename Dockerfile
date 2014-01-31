@@ -1,6 +1,6 @@
 # Dockerfile for Cassandra
 
-FROM quay.io/signalfuse/maestro-base:0.1.5
+FROM quay.io/signalfuse/maestro-base:0.1.6
 MAINTAINER Maxime Petazzoni <max@signalfuse.com>
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -19,4 +19,5 @@ ADD run.py /opt/apache-cassandra-2.0.4/.docker/
 WORKDIR /opt/apache-cassandra-2.0.4
 VOLUME /var/lib/cassandra/data
 VOLUME /var/lib/cassandra/commitlog
+VOLUME /var/log/cassandra
 CMD ["python", "/opt/apache-cassandra-2.0.4/.docker/run.py"]
