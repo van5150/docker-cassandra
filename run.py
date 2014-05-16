@@ -10,14 +10,15 @@ import subprocess
 import yaml
 
 from maestro.guestutils import *
-from maestro.extensions.logging.logstash import run_service
 
 os.chdir(os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     '..'))
 
 CASSANDRA_CONFIG_FILE = os.path.join('conf', 'cassandra.yaml')
-CASSANDRA_LOG4j_CONFIG = os.path.join('conf', 'log4j-server.properties')
+CASSANDRA_LOGGING_CONFIG = os.path.join('conf', 'log4j-server.properties')
+
+LOG_PATTERN = "%d{yyyy'-'MM'-'dd'T'HH:mm:ss.SSS} %-5p [%-35.35t] [%-36.36c]: %m%n"
 
 # Read and parse the existing file.
 with open(CASSANDRA_CONFIG_FILE) as f:
@@ -44,16 +45,18 @@ conf['seed_provider'][0]['parameters'][0]['seeds'] = \
 with open(CASSANDRA_CONFIG_FILE, 'w+') as f:
     yaml.dump(conf, f, default_flow_style=False)
 
-# Update the log4j config to disable file logging.
-with open(CASSANDRA_LOG4j_CONFIG, 'w+') as f:
-    f.write("""# Log4j configuration, logs to stdout
-log4j.rootLogger=INFO,stdout
-log4j.appender.stdout=org.apache.log4j.ConsoleAppender
-log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
-log4j.appender.stdout.layout.ConversionPattern=%d{yyyy/MM/dd'T'HH:mm:ss.SSS} %-5p [%t] %c: %m%n
-# Adding this to avoid thrift logging disconnect errors.
-log4j.logger.org.apache.thrift.server.TNonblockingServer=ERROR
-""")
+# Setup the logging configuration.
+with open(CASSANDRA_LOGGING_CONFIG, 'w+') as f:
+    f.write("""# Log4j configuration, logs to rotating file
+log4j.rootLogger=INFO,R
+
+log4j.appender.R=org.apache.log4j.RollingFileAppender
+log4j.appender.R.File=/var/log/%s/%s.log
+log4j.appender.R.maxFileSize=100MB
+log4j.appender.R.maxBackupIndex=10
+log4j.appender.R.layout=org.apache.log4j.PatternLayout
+log4j.appender.R.layout.ConversionPattern=%s
+""" % (get_service_name(), get_container_name(), LOG_PATTERN))
 
 # Setup the JMX Java agent and other JVM options.
 os.environ['JVM_OPTS'] = ' '.join([
@@ -72,6 +75,4 @@ subprocess.check_call(['sed', '-ie',
     'conf/cassandra-env.sh'])
 
 # Start Cassandra in the foreground.
-run_service(['bin/cassandra', '-f'],
-        logbase='/var/log/cassandra',
-        logtarget='logstash')
+os.execl('bin/cassandra', 'cassandra', '-f')
