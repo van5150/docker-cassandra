@@ -1,6 +1,6 @@
 # Dockerfile for Cassandra
 
-FROM quay.io/signalfuse/maestro-base:0.1.7.1
+FROM quay.io/signalfuse/maestro-base:0.1.8.1
 MAINTAINER Maxime Petazzoni <max@signalfuse.com>
 
 ENV DEBIAN_FRONTEND noninteractive
