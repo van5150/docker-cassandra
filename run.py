@@ -18,7 +18,7 @@ os.chdir(os.path.join(
 CASSANDRA_CONFIG_FILE = os.path.join('conf', 'cassandra.yaml')
 CASSANDRA_LOGGING_CONFIG = os.path.join('conf', 'log4j-server.properties')
 
-LOG_PATTERN = "%d{yyyy'-'MM'-'dd'T'HH:mm:ss.SSS} %-5p [%-35.35t] [%-36.36c]: %m%n"
+LOG_PATTERN = "%d{yyyy'-'MM'-'dd'T'HH:mm:ss.SSSXXX} %-5p [%-35.35t] [%-36.36c]: %m%n"
 
 # Read and parse the existing file.
 with open(CASSANDRA_CONFIG_FILE) as f:
