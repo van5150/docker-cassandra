@@ -59,20 +59,25 @@ log4j.appender.R.layout.ConversionPattern=%s
 """ % (get_service_name(), get_container_name(), LOG_PATTERN))
 
 # Setup the JMX Java agent and other JVM options.
-os.environ['JVM_OPTS'] = ' '.join([
+jvm_opts = [
     '-server',
     '-showversion',
-    '-javaagent:lib/jmxagent.jar',
-    '-Dsf.jmxagent.port={}'.format(get_port('jmx', -1)),
-    '-Djava.rmi.server.hostname={}'.format(get_container_host_address()),
-    '-Dvisualvm.display.name="{}/{}"'.format(get_environment_name(), get_container_name()),
-    os.environ.get('JVM_OPTS', ''),
-])
+    '-Dvisualvm.display.name="{}/{}"'.format(
+        get_environment_name(), get_container_name()),
+]
 
-# Throw the default JMX on another port we don't care about.
-subprocess.check_call(['sed', '-ie',
-    's/^JMX_PORT="7199"$/JMX_PORT="17199"/',
-    'conf/cassandra-env.sh'])
+jmx_port = get_port('jmx', -1)
+if jmx_port != -1:
+    jvm_opts += [
+        '-Dcom.sun.management.jmxremote.rmi.port={}'.format(jmx_port),
+        '-Djava.rmi.server.hostname={}'.format(get_container_host_address()),
+        '-Dcom.sun.management.jmxremote.local.only=false',
+    ]
+    subprocess.check_call(['sed', '-ie',
+        's/^JMX_PORT="7199"$/JMX_PORT="{}"/'.format(jmx_port),
+        'conf/cassandra-env.sh'])
+
+os.environ['JVM_OPTS'] = ' '.join(jvm_opts) + os.environ.get('JVM_OPTS', '')
 
 # Start Cassandra in the foreground.
 os.execl('bin/cassandra', 'cassandra', '-f')
