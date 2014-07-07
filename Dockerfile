@@ -6,7 +6,10 @@ MAINTAINER Maxime Petazzoni <max@signalfuse.com>
 ENV DEBIAN_FRONTEND noninteractive
 
 # Python YAML is needed to tweak Cassandra's configuration
-RUN apt-get -y install python-yaml
+RUN apt-get -y install python-yaml python-pip
+
+# Get Python ZooKeeper (Kazoo)
+RUN pip install kazoo
 
 # Get the latest stable version of Cassandra
 RUN wget -q -O - http://archive.apache.org/dist/cassandra/2.0.7/apache-cassandra-2.0.7-bin.tar.gz \
