@@ -45,6 +45,17 @@ THRIFT_PORT = get_port('rpc', 9160)
 
 LOG_PATTERN = "%d{yyyy'-'MM'-'dd'T'HH:mm:ss.SSSXXX} %-5p [%-35.35t] [%-36.36c]: %m%n"
 
+LOG_CONFIG = """# Log4j configuration, logs to rotating file
+log4j.rootLogger=INFO,R
+
+log4j.appender.R=org.apache.log4j.RollingFileAppender
+log4j.appender.R.File=/var/log/%s/%s.log
+log4j.appender.R.MaxFileSize=100MB
+log4j.appender.R.MaxBackupIndex=10
+log4j.appender.R.layout=org.apache.log4j.PatternLayout
+log4j.appender.R.layout.ConversionPattern=%s
+"""
+
 
 def advertise_zk(service, retries=3):
     zk_nodes = ','.join(get_node_list('zookeeper', ports=['client'], minimum=0))
@@ -117,16 +128,7 @@ def generate_configs():
 
     # Setup the logging configuration.
     with open(CASSANDRA_LOGGING_CONFIG, 'w+') as f:
-        f.write("""# Log4j configuration, logs to rotating file
-    log4j.rootLogger=INFO,R
-
-    log4j.appender.R=org.apache.log4j.RollingFileAppender
-    log4j.appender.R.File=/var/log/%s/%s.log
-    log4j.appender.R.MaxFileSize=100MB
-    log4j.appender.R.MaxBackupIndex=10
-    log4j.appender.R.layout=org.apache.log4j.PatternLayout
-    log4j.appender.R.layout.ConversionPattern=%s
-    """ % (get_service_name(), get_container_name(), LOG_PATTERN))
+        f.write(LOG_CONFIG % (get_service_name(), get_container_name(), LOG_PATTERN))
 
 
 def start_cassandra():
@@ -163,6 +165,7 @@ service = start_cassandra()
 zk = advertise_zk(service)
 
 try:
+    service.communicate()
     service.wait()
 finally:
     zk and zk.stop()
