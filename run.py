@@ -48,9 +48,13 @@ LOG_PATTERN = "%d{yyyy'-'MM'-'dd'T'HH:mm:ss.SSSXXX} %-5p [%-35.35t] [%-36.36c]: 
 
 def advertise_zk(service, retries=3):
     zk_nodes = ','.join(get_node_list('zookeeper', ports=['client'], minimum=0))
-    advertise = zk_nodes and not os.environ.get("NON_SEED_NODE")
-    if not advertise:
+    if "NON_SEED_NODE" in os.environ:
+        # this node is explicitly marked as non-seed: don't advertise
         return None
+    elif not zk_nodes:
+        # No zookeeper nodes registered: don't advertise
+        return None
+    # implied else: advertize this node in zookeeper
 
     inst_id = str(uuid.uuid1())
 
@@ -100,8 +104,8 @@ def generate_configs():
         'broadcast_address': get_container_host_address(),
         'rpc_address': get_container_internal_address(),
         'storage_port': get_port('storage', 7000),
-        'native_transport_port': get_port('transport', 9042),
-        'rpc_port': get_port('rpc', 9160),
+        'native_transport_port': CQL_PORT,
+        'rpc_port': THRIFT_PORT,
     })
 
     conf['seed_provider'][0]['parameters'][0]['seeds'] = \
