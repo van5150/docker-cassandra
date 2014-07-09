@@ -16,7 +16,11 @@ os.chdir(os.path.join(
     '..'))
 
 CASSANDRA_CONFIG_FILE = os.path.join('conf', 'cassandra.yaml')
+CASSANDRA_RACKDC_CONFIG_FILE = os.path.join('conf', 'cassandra-rackdc.properties')
 CASSANDRA_LOGGING_CONFIG = os.path.join('conf', 'log4j-server.properties')
+
+rack = os.environ.get('RACK', 'rack1')
+dc = os.environ.get('DC', 'datacenter1')
 
 LOG_PATTERN = "%d{yyyy'-'MM'-'dd'T'HH:mm:ss.SSSXXX} %-5p [%-35.35t] [%-36.36c]: %m%n"
 
@@ -36,6 +40,7 @@ conf.update({
     'storage_port': get_port('storage', 7000),
     'native_transport_port': get_port('transport', 9042),
     'rpc_port': get_port('rpc', 9160),
+    'endpoint_snitch': 'GossipingPropertyFileSnitch',
 })
 
 conf['seed_provider'][0]['parameters'][0]['seeds'] = \
@@ -57,6 +62,10 @@ log4j.appender.R.MaxBackupIndex=10
 log4j.appender.R.layout=org.apache.log4j.PatternLayout
 log4j.appender.R.layout.ConversionPattern=%s
 """ % (get_service_name(), get_container_name(), LOG_PATTERN))
+
+# set up topology file
+with open(CASSANDRA_RACKDC_CONFIG_FILE, "w") as f:
+    f.write('dc={}\nrack={}\n'.format(dc, rack))
 
 # Setup the JMX Java agent and other JVM options.
 jvm_opts = [
