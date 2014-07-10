@@ -69,10 +69,10 @@ with open(CASSANDRA_RACKDC_CONFIG_FILE, "w") as f:
 
 # Setup the JMX Java agent and other JVM options.
 jvm_opts = [
-    '-server',
-    '-showversion',
     '-Dvisualvm.display.name="{}/{}"'.format(
         get_environment_name(), get_container_name()),
+    '-server',
+    '-showversion',
 ]
 
 jmx_port = get_port('jmx', -1)
