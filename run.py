@@ -22,6 +22,12 @@ CASSANDRA_LOGGING_CONFIG = os.path.join('conf', 'log4j-server.properties')
 rack = os.environ.get('RACK', 'rack1')
 dc = os.environ.get('DC', 'datacenter1')
 
+seeds = [seed.strip() for seed in os.environ.get('SEED_NODES', '').split(',') if seed.strip()]
+if seeds:
+    seed_hosts = [get_specific_host(get_service_name(), seed) for seed in seeds]
+else:
+    seed_hosts = get_node_list(get_service_name(), minimum=0) or ['localhost']
+
 LOG_PATTERN = "%d{yyyy'-'MM'-'dd'T'HH:mm:ss.SSSXXX} %-5p [%-35.35t] [%-36.36c]: %m%n"
 
 # Read and parse the existing file.
@@ -43,8 +49,7 @@ conf.update({
     'endpoint_snitch': 'GossipingPropertyFileSnitch',
 })
 
-conf['seed_provider'][0]['parameters'][0]['seeds'] = \
-    ','.join(get_node_list(get_service_name(), minimum=0)) or '127.0.0.1'
+conf['seed_provider'][0]['parameters'][0]['seeds'] = ','.join(seed_hosts)
 
 # Output the updated configuration.
 with open(CASSANDRA_CONFIG_FILE, 'w+') as f:
