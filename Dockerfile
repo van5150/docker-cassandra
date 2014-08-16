@@ -9,10 +9,10 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y install python-yaml
 
 # Get the latest stable version of Cassandra
-RUN wget -q -O - http://archive.apache.org/dist/cassandra/2.0.7/apache-cassandra-2.0.7-bin.tar.gz \
+RUN wget -q -O - http://apache.mirror.cdnetworks.com/cassandra/2.0.9/apache-cassandra-2.0.9-bin.tar.gz \
   | tar -C /opt -xz
 
-ADD run.py /opt/apache-cassandra-2.0.7/.docker/
+ADD run.py /opt/apache-cassandra-2.0.9/.docker/
 
-WORKDIR /opt/apache-cassandra-2.0.7
-CMD ["python", "/opt/apache-cassandra-2.0.7/.docker/run.py"]
+WORKDIR /opt/apache-cassandra-2.0.9
+CMD ["python", "/opt/apache-cassandra-2.0.9/.docker/run.py"]
